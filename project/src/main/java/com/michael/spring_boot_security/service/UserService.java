@@ -1,0 +1,14 @@
+package com.michael.spring_boot_security.service;
+
+import com.michael.spring_boot_security.entity.RoleEntity;
+import com.michael.spring_boot_security.payload.request.RegistrationRequest;
+
+import java.io.IOException;
+
+public interface UserService {
+    void createUser(RegistrationRequest request) throws IOException;
+
+    RoleEntity getRoleName(String name);
+
+    void verifyAccountKey(String key);
+}

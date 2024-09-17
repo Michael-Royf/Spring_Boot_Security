@@ -121,7 +121,7 @@ public class HandleExceptions extends ResponseEntityExceptionHandler implements 
 //    @ExceptionHandler(DisabledException.class)
 //    public ResponseEntity<Response> disabledException(DisabledException exception) {
 //        log.error(String.format("DisabledException: %s", exception.getMessage()));
-//        return new ResponseEntity<>(handleErrorResponse("User account is currently disabled", getRootCauseMessage(exception), request, BAD_REQUEST), BAD_REQUEST);
+//        return new ResponseEntity<>(handleErrorResponse("UserEntity account is currently disabled", getRootCauseMessage(exception), request, BAD_REQUEST), BAD_REQUEST);
 //    }
 //
 //    @ExceptionHandler(LockedException.class)

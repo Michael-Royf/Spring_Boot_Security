@@ -39,13 +39,13 @@ public abstract class Auditable {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-
+//TODO: fix
     @PrePersist
     public void beforePersist() {
-        var userId = RequestContext.getUserId();
-        if (userId == null) {
-            throw new ApiException("Cannot persist entity without user ID in RequestContext for this thread");
-        }
+        var userId =  0L;//RequestContext.getUserId();
+//        if (userId == null) {
+//            throw new ApiException("Cannot persist entity without user ID in RequestContext for this thread");
+//        }
         setCreatedAt(LocalDateTime.now());
         setCreatedBy(userId);
         setUpdatedBy(userId);
@@ -54,11 +54,14 @@ public abstract class Auditable {
 
     @PreUpdate
     public void beforeUpdate() {
-        var userId = RequestContext.getUserId();
-        if (userId == null) {
-            throw new ApiException("Cannot update entity without user ID in RequestContext for this thread");
-        }
+        var userId = 0L;// RequestContext.getUserId();
+//        if (userId == null) {
+//            throw new ApiException("Cannot update entity without user ID in RequestContext for this thread");
+//        }
+
         setUpdatedBy(userId);
         setUpdatedAt(LocalDateTime.now());
     }
+
+
 }

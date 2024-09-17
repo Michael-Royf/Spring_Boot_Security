@@ -1,10 +1,10 @@
 package com.michael.spring_boot_security.entity.base;
 
+
 public class RequestContext {
     private static final ThreadLocal<Long> USER_ID = new ThreadLocal<>();
 
-    private RequestContext() {
-    }
+    private RequestContext() {}
 
     public static void start() {
         USER_ID.remove();

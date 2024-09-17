@@ -2,6 +2,7 @@ package com.michael.spring_boot_security.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.michael.spring_boot_security.entity.base.Auditable;
+import com.michael.spring_boot_security.enumerations.Authority;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -16,5 +17,5 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class RoleEntity extends Auditable {
     private String name;
-    private String authorities;
+    private Authority authorities;
 }
