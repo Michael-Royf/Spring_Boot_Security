@@ -1,11 +1,14 @@
 package com.michael.spring_boot_security.service.impl;
 
+import com.michael.spring_boot_security.cache.CacheStore;
 import com.michael.spring_boot_security.entity.ConfirmationEntity;
 import com.michael.spring_boot_security.entity.CredentialEntity;
 import com.michael.spring_boot_security.entity.RoleEntity;
 import com.michael.spring_boot_security.entity.UserEntity;
+import com.michael.spring_boot_security.entity.base.RequestContext;
 import com.michael.spring_boot_security.enumerations.Authority;
 import com.michael.spring_boot_security.enumerations.EventType;
+import com.michael.spring_boot_security.enumerations.LoginType;
 import com.michael.spring_boot_security.event.UserEvent;
 import com.michael.spring_boot_security.exception.payload.NotFoundException;
 import com.michael.spring_boot_security.payload.request.RegistrationRequest;
@@ -43,6 +46,7 @@ public class UserServiceImpl implements UserService {
     private final CredentialRepository credentialRepository;
     private final ConfirmationRepository confirmationRepository;
     private final ApplicationEventPublisher publisher;
+    private final CacheStore<String, Integer> userCache;
 
 
     @Override
@@ -72,6 +76,32 @@ public class UserServiceImpl implements UserService {
         userEntity.setEnabled(true);
         userRepository.save(userEntity);
         confirmationRepository.delete(confirmationEntity);
+    }
+
+    @Override
+    public void updateLoginAttempt(String email, LoginType loginType) {
+        var userEntity = getUserByEmail(email);
+        RequestContext.setUserId(userEntity.getId());
+        switch (loginType){
+            case LOGIN_ATTEMPT -> {
+                if (userCache.get(userEntity.getEmail())== null){
+                    userEntity.setLoginAttempts(0);
+                    userEntity.setAccountNonLocked(true);
+                }
+                userEntity.setLoginAttempts(userEntity.getLoginAttempts() + 1);
+                userCache.put(userEntity.getEmail(), userEntity.getLoginAttempts());
+                if (userCache.get(userEntity.getEmail()) > 5){
+                    userEntity.setAccountNonLocked(false);
+                }
+            }
+            case LOGIN_SUCCESS -> {
+                userEntity.setAccountNonLocked(true);
+                userEntity.setLoginAttempts(0);
+                userEntity.setLastLogin(LocalDateTime.now());
+                userCache.evict(userEntity.getEmail());
+            }
+        }
+        userRepository.save(userEntity);
     }
 
     private UserEntity getUserByEmail(String email) {

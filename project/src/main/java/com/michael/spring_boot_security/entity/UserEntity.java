@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 //Когда вы добавляете эту аннотацию к классу или полю, это указывает Jackson включить в JSON только те свойства, которые имеют значения, отличные от значений по умолчанию. Это помогает уменьшить размер JSON и делает его более компактным и читабельным.
 public class UserEntity extends Auditable {
+
     @Column(updatable = false, unique = true, nullable = false)
     private String userId;
     @Column(name = "first_name", nullable = false)

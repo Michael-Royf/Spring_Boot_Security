@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(value = {"createdAt", "updateAt"}, allowGetters = true)
+@JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, allowGetters = true)
 public abstract class Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    //@SequenceGenerator(name = "primary_key_seq", sequenceName = "primary_key_seq", allocationSize =1)
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "primary_key_seq")
+   // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "primary_key_seq", sequenceName = "primary_key_seq", allocationSize =1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "primary_key_seq")
     @Column(name = "id", updatable = false)
     private Long id;
     private String referenceId = new AlternativeJdkIdGenerator().generateId().toString();
@@ -31,6 +31,7 @@ public abstract class Auditable {
     private Long createdBy;
     @NotNull
     private Long updatedBy;
+
     @NotNull
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
