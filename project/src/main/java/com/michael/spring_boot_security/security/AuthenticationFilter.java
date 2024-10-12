@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.michael.spring_boot_security.domain.ApiAuthentication;
 import com.michael.spring_boot_security.enumerations.LoginType;
 import com.michael.spring_boot_security.payload.request.LoginRequest;
+import com.michael.spring_boot_security.service.JwtService;
 import com.michael.spring_boot_security.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,6 +21,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import java.io.IOException;
 
 import static com.fasterxml.jackson.core.JsonParser.Feature.AUTO_CLOSE_SOURCE;
+import static com.michael.spring_boot_security.utility.RequestUtils.handleErrorResponse;
 import static org.springframework.http.HttpMethod.POST;
 
 @Slf4j
@@ -44,7 +46,7 @@ public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter
             return getAuthenticationManager().authenticate(authentication);
         } catch (Exception exception) {
             log.error(exception.getMessage());
-          //  handleErrorResponse(request, response, exception);
+            handleErrorResponse(request, response, exception);
             return null;
         }
     }

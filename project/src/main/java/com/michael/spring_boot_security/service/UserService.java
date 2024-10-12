@@ -1,5 +1,6 @@
 package com.michael.spring_boot_security.service;
 
+import com.michael.spring_boot_security.dto.User;
 import com.michael.spring_boot_security.entity.RoleEntity;
 import com.michael.spring_boot_security.enumerations.LoginType;
 import com.michael.spring_boot_security.payload.request.RegistrationRequest;
@@ -14,4 +15,7 @@ public interface UserService {
     void verifyAccountKey(String key);
 
     void updateLoginAttempt(String email, LoginType loginType);
+
+    User getUserByUserId(String userId);
+
 }

@@ -1,6 +1,7 @@
 package com.michael.spring_boot_security.service.impl;
 
 import com.michael.spring_boot_security.cache.CacheStore;
+import com.michael.spring_boot_security.dto.User;
 import com.michael.spring_boot_security.entity.ConfirmationEntity;
 import com.michael.spring_boot_security.entity.CredentialEntity;
 import com.michael.spring_boot_security.entity.RoleEntity;
@@ -103,6 +104,14 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.save(userEntity);
     }
+
+    @Override
+    public User getUserByUserId(String userId) {
+        return null;
+//        var userEntity = userRepository.findUserByUserId(userId).orElseThrow(() -> new ApiException("User not found"));
+//        return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
+    }
+
 
     private UserEntity getUserByEmail(String email) {
         return userRepository.findUserEntityByEmail(email)
