@@ -2,7 +2,7 @@ package com.michael.spring_boot_security.service;
 
 import com.michael.spring_boot_security.domain.Token;
 import com.michael.spring_boot_security.domain.TokenData;
-import com.michael.spring_boot_security.dto.User;
+import com.michael.spring_boot_security.domain.User;
 import com.michael.spring_boot_security.enumerations.TokenType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package com.michael.spring_boot_security.dto;
+package com.michael.spring_boot_security.domain;
 
 import lombok.*;
 

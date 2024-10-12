@@ -1,6 +1,5 @@
 package com.michael.spring_boot_security.domain;
 
-import com.michael.spring_boot_security.dto.User;
 import com.michael.spring_boot_security.exception.payload.ApiException;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;

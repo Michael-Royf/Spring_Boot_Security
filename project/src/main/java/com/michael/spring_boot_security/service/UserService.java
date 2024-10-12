@@ -1,6 +1,7 @@
 package com.michael.spring_boot_security.service;
 
-import com.michael.spring_boot_security.dto.User;
+import com.michael.spring_boot_security.domain.User;
+import com.michael.spring_boot_security.entity.CredentialEntity;
 import com.michael.spring_boot_security.entity.RoleEntity;
 import com.michael.spring_boot_security.enumerations.LoginType;
 import com.michael.spring_boot_security.payload.request.RegistrationRequest;
@@ -18,4 +19,7 @@ public interface UserService {
 
     User getUserByUserId(String userId);
 
+    User getUserByEmail(String email);
+
+    CredentialEntity getUserCredentialById(Long UserId);
 }

@@ -1,6 +1,5 @@
 package com.michael.spring_boot_security.domain;
 
-import com.michael.spring_boot_security.dto.User;
 import io.jsonwebtoken.Claims;
 import lombok.Builder;
 import lombok.Getter;

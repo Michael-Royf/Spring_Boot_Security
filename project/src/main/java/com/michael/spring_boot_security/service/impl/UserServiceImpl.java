@@ -1,7 +1,7 @@
 package com.michael.spring_boot_security.service.impl;
 
 import com.michael.spring_boot_security.cache.CacheStore;
-import com.michael.spring_boot_security.dto.User;
+import com.michael.spring_boot_security.domain.User;
 import com.michael.spring_boot_security.entity.ConfirmationEntity;
 import com.michael.spring_boot_security.entity.CredentialEntity;
 import com.michael.spring_boot_security.entity.RoleEntity;
@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.michael.spring_boot_security.utility.UserUtils.fromUserEntity;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Service
@@ -73,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void verifyAccountKey(String key) {
         ConfirmationEntity confirmationEntity = getUserConfirmation(key);
-        UserEntity userEntity = getUserByEmail(confirmationEntity.getUserEntity().getEmail());
+        UserEntity userEntity = findUserEntityByEmail(confirmationEntity.getUserEntity().getEmail());
         userEntity.setEnabled(true);
         userRepository.save(userEntity);
         confirmationRepository.delete(confirmationEntity);
@@ -81,17 +82,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateLoginAttempt(String email, LoginType loginType) {
-        var userEntity = getUserByEmail(email);
+        var userEntity = findUserEntityByEmail(email);
         RequestContext.setUserId(userEntity.getId());
-        switch (loginType){
+        switch (loginType) {
             case LOGIN_ATTEMPT -> {
-                if (userCache.get(userEntity.getEmail())== null){
+                if (userCache.get(userEntity.getEmail()) == null) {
                     userEntity.setLoginAttempts(0);
                     userEntity.setAccountNonLocked(true);
                 }
                 userEntity.setLoginAttempts(userEntity.getLoginAttempts() + 1);
                 userCache.put(userEntity.getEmail(), userEntity.getLoginAttempts());
-                if (userCache.get(userEntity.getEmail()) > 5){
+                if (userCache.get(userEntity.getEmail()) > 5) {
                     userEntity.setAccountNonLocked(false);
                 }
             }
@@ -107,13 +108,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUserId(String userId) {
-        return null;
-//        var userEntity = userRepository.findUserByUserId(userId).orElseThrow(() -> new ApiException("User not found"));
-//        return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
+        var userEntity = findUserEntityById(userId);
+        return fromUserEntity(userEntity, userEntity.getRole(), getUserCredentialById(userEntity.getId()));
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        UserEntity user = findUserEntityByEmail(email);
+        return fromUserEntity(user, user.getRole(), getUserCredentialById(user.getId()));
     }
 
 
-    private UserEntity getUserByEmail(String email) {
+    @Override
+    public CredentialEntity getUserCredentialById(Long userId) {
+        return credentialRepository.getCredentialEntityByUserEntityId(userId)
+                .orElseThrow(() -> new NotFoundException("Unable to find credential"));
+
+
+    }
+
+    private UserEntity findUserEntityById(String userId) {
+        return userRepository.findUserEntityByUserId(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+    }
+
+    private UserEntity findUserEntityByEmail(String email) {
         return userRepository.findUserEntityByEmail(email)
                 .orElseThrow(() -> new NotFoundException(String.format(NO_USER_FOUND_BY_EMAIL, email)));
     }
