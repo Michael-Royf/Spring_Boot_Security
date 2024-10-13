@@ -1,23 +1,28 @@
 package com.michael.spring_boot_security.security;
 
+import com.michael.spring_boot_security.handler.ApiAccessDeniedHandler;
+import com.michael.spring_boot_security.handler.ApiAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
+import static com.google.common.net.HttpHeaders.X_REQUESTED_WITH;
+import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpMethod.*;
+import static com.michael.spring_boot_security.constans.AppConstants.*;
 
 @Configuration
 @EnableWebSecurity
@@ -25,40 +30,48 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilterChainConfiguration {
 
-    private final  PasswordEncoder passwordEncoder;
+    private final ApiAccessDeniedHandler apiAccessDeniedHandler;
+    private final ApiAuthenticationEntryPoint apiAuthenticationEntryPoint;
+    private final ApiHttpConfigurer apiHttpConfigurer;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request->
-                        request.requestMatchers("/user/test").permitAll()
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception ->
+                        exception.accessDeniedHandler(apiAccessDeniedHandler)
+                                .authenticationEntryPoint(apiAuthenticationEntryPoint))
+                .authorizeHttpRequests(request ->
+                        request.requestMatchers(PUBLIC_URLS).permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/user/delete/**").hasAnyAuthority("user:delete")
+                                .requestMatchers(HttpMethod.DELETE, "/document/delete/**").hasAnyAuthority("document:delete")
                                 .anyRequest().authenticated())
+                .with(apiHttpConfigurer, Customizer.withDefaults())
                 .build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
-        return new ProviderManager(daoAuthenticationProvider);
+    public CorsConfigurationSource corsConfigurationSource() {
+        var corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedOrigins(List.of("http://securedoc.com", "http://localhost:4200", "http://localhost:3000"));
+        corsConfiguration.setAllowedHeaders(Arrays.asList(ORIGIN, ACCESS_CONTROL_ALLOW_ORIGIN, CONTENT_TYPE, ACCEPT, AUTHORIZATION, X_REQUESTED_WITH, ACCESS_CONTROL_REQUEST_METHOD, ACCESS_CONTROL_REQUEST_HEADERS, ACCESS_CONTROL_ALLOW_CREDENTIALS, FILE_NAME));
+        corsConfiguration.setExposedHeaders(Arrays.asList(ORIGIN, ACCESS_CONTROL_ALLOW_ORIGIN, CONTENT_TYPE, ACCEPT, AUTHORIZATION, X_REQUESTED_WITH, ACCESS_CONTROL_REQUEST_METHOD, ACCESS_CONTROL_REQUEST_HEADERS, ACCESS_CONTROL_ALLOW_CREDENTIALS, FILE_NAME));
+        corsConfiguration.setAllowedMethods(Arrays.asList(GET.name(), POST.name(), PUT.name(), PATCH.name(), DELETE.name(), OPTIONS.name()));
+        corsConfiguration.setMaxAge(3600L);
+        var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration(BASE_PATH, corsConfiguration);
+        return source;
     }
 
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        var michael = User.withDefaultPasswordEncoder()
-                .username("Michael")
-                .password("password")
-                .roles("USER")
-                .build();
-        var anna = User.withDefaultPasswordEncoder()
-                .username("Anna")
-                .password("password")
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(List.of(michael, anna));
-    }
-
+//    @Bean
+//    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
+//        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+//        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+//        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+//        return new ProviderManager(daoAuthenticationProvider);
+//    }
 }

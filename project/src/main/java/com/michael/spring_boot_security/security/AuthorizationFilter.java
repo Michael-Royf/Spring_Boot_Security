@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -20,7 +21,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.michael.spring_boot_security.constans.AppConstants.OPTIONS_HTTP_METHOD;
 import static com.michael.spring_boot_security.constans.AppConstants.PUBLIC_ROUTES;
 import static com.michael.spring_boot_security.enumerations.TokenType.ACCESS;
 import static com.michael.spring_boot_security.enumerations.TokenType.REFRESH;
@@ -61,12 +61,11 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        var shouldNotFilter = request.getMethod().equalsIgnoreCase(OPTIONS_HTTP_METHOD) || Arrays.asList(PUBLIC_ROUTES).contains(request.getRequestURI());
+        var shouldNotFilter = request.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.name()) || Arrays.asList(PUBLIC_ROUTES).contains(request.getRequestURI());
         if (shouldNotFilter){
             RequestContext.setUserId(0L);
         }
         return shouldNotFilter;
-
     }
 
 

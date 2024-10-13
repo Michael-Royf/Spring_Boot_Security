@@ -22,6 +22,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
     private final ConfirmationRepository confirmationRepository;
     private final ApplicationEventPublisher publisher;
     private final CacheStore<String, Integer> userCache;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -57,7 +59,7 @@ public class UserServiceImpl implements UserService {
         var userEntity = createNewUser(request);
 
         userRepository.save(userEntity);
-        var credentialEntity = new CredentialEntity(request.getPassword(), userEntity);//TODO: encode password
+        var credentialEntity = new CredentialEntity(passwordEncoder.encode(request.getPassword()), userEntity);//TODO: encode password
         credentialRepository.save(credentialEntity);
         var confirmationEntity = new ConfirmationEntity(userEntity);
         confirmationRepository.save(confirmationEntity);

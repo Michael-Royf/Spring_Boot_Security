@@ -1,7 +1,7 @@
 package com.michael.spring_boot_security.constans;
 
 public class AppConstants {
-
+    public static final String BASE_PATH = "/**";
     public static final String USER_LOGIN = "/user/login";
     public static final int NINETY_DAYS = 90;
     public static final int STRENGTH = 12;
@@ -16,7 +16,7 @@ public class AppConstants {
     public static final String ADMIN_AUTHORITIES = "user:create,user:read,user:update,document:create,document:read,document:update,document:delete";
     public static final String SUPER_ADMIN_AUTHORITIES = "user:create,user:read,user:update,user:delete,document:create,document:read,document:update,document:delete";
     public static final String MANAGER_AUTHORITIES = "document:create,document:read,document:update,document:delete";
-
+    public static final String FILE_NAME = "File-Name";
 
 
     public static final String[] PUBLIC_ROUTES = {"/user/reset_password/reset",
@@ -34,5 +34,22 @@ public class AppConstants {
             "/user/verify/account",
             "/user/verify/password",
             "/user/verify/code"};
+
+    public static final String[] PUBLIC_URLS = {
+            "/user/reset_password/reset/**",
+            "/user/reset_password/**",
+            "/user/reset_password/**",
+            "/user/verify/**",
+            "/user/verify/qrcode/**",
+            "/user/verify/reset_password/**",
+            "/user/verify/account/**",
+            "/user/verify/password/**",
+            "/user/login/**",
+            "/user/register/**",
+            "/user/new/password/**",
+            //  "document/download/**",
+            //   "/user/image/**",
+            //     "/user/mfa/setup/**"
+    };
 
 }
