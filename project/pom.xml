@@ -108,6 +108,13 @@
             <scope>runtime</scope>
         </dependency>
 
+<!--        for MFA-->
+        <dependency>
+            <groupId>dev.samstevens.totp</groupId>
+            <artifactId>totp</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+
         <!--  зависимость для файла .env      -->
         <!--        <dependency>-->
         <!--            <groupId>io.github.cdimascio</groupId>-->

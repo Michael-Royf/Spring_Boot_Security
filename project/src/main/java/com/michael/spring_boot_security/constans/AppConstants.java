@@ -5,7 +5,9 @@ public class AppConstants {
     public static final String USER_LOGIN = "/user/login";
     public static final int NINETY_DAYS = 90;
     public static final int STRENGTH = 12;
-    public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
+    public static final String MICHAEL_APP = "Michael_App";
+    public static final String EXISTING_PASSWORD_INCORRECT = "Existing password is incorrect";
+
 
     public static final String ROLE = "role";
     public static final String ROLE_PREFIX = "ROLE_";
